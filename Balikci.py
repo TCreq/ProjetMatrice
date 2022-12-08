@@ -57,18 +57,20 @@ def LU(A0):
     return [L,U]
 ##########################################  Question 5  ##########################################
 
+####################################  Outils pour la suite  ######################################
 panne=[7,8,15,16,17,18]
 n=20
-
-# Création de la matrice P:
-
-P=np.eye(n)
-for i in panne:
-  P[i-1][i-1]=0
-
 A=MatriceA(n,1)
 pi=np.array(n*[1.]).transpose()
 
+# Création de la matrice P:
+def MatriceP(n,panne):
+    P=np.eye(n)
+    for i in panne:
+        P[i-1][i-1]=0
+
+P= Matrice(n,panne)
+##################################################################################################
 # A_new = PAP
 # pi_new = P.pi
 A_new=np.dot(P,A)
@@ -96,18 +98,6 @@ plt.xticks(range(21))
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102),loc='lower left', mode="expand", borderaxespad=0.)
 
 ##########################################  Question 6  ##########################################
-
-panne=[7,8,15,16,17,18]
-n=20
-
-# Création de la matrice P:
-
-P=np.eye(n)
-for i in panne:
-  P[i-1][i-1]=0
-
-A=MatriceA(n,1)
-pi=np.array(n*[1.]).transpose()
 
 # G = P.transpose(A).A.P
 # pi_new = P.transpose(A).pi
@@ -167,16 +157,7 @@ def Grad(M,P,b):
 ##########################################  Question 7_1  ##########################################
 ##########################################  Cas où M=PAP  ##########################################
 
-A=MatriceA(n,1)
 M=A
-
-panne=[7,8,15,16,17,18]
-n=20
-P=np.eye(n)
-for i in panne:
-  P[i-1][i-1]=0
-
-pi=np.array(n*[1.]).transpose()
 pi_new=np.dot(P,pi)
 
 x=Grad(M,P,pi_new)
@@ -191,15 +172,7 @@ plt.legend(bbox_to_anchor=(0., 1.02, 1., .102),loc='lower left', mode="expand", 
 ##########################################  Question 7_2  ##########################################
 #####################################  Cas où M=transpose(A).A  ####################################
 
-panne=[7,8,15,16,17,18]
-n=20
-P=np.eye(n)
-for i in panne:
-  P[i-1][i-1]=0
-
 M=np.dot(A.T,A)
-
-pi=np.array(n*[1.]).transpose()
 pi_new=np.dot(P,np.dot(A.T,pi))
 
 x=Grad(M,P,pi_new)
