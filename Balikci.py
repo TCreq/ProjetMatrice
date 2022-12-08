@@ -67,8 +67,9 @@ def MatriceP(n,panne):
     P=np.eye(n)
     for i in panne:
         P[i-1][i-1]=0
+    return P
 
-P= Matrice(n,panne)
+P= MatriceP(n,panne)
 ##################################################################################################
 # A_new = PAP
 # pi_new = P.pi
@@ -82,9 +83,7 @@ pi_new=np.dot(P,pi)
 
 # On résout le problème (8)
 
-LU=LU2(A_new)
-L=LU[0]
-U=LU[1]
+L,U=LU(A_new)[0],LU(A_new)[1]
 y=descente(L,pi_new)
 x=remontee(U,y)
 print(x)
@@ -112,9 +111,7 @@ pi_new=np.dot(P,np.dot(A_new.T,pi))
 
 # On résout le problème (10)
 
-LU=LU2(G)
-L=LU[0]
-U=LU[1]
+L,U=LU(G)[0],LU(G)[1]
 y=descente(L,pi_new)
 x=remontee(U,y)
 print(x)
