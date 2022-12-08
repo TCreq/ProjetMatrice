@@ -143,7 +143,8 @@ import scipy.linalg as lg
 from numpy.linalg import norm
 
 def Grad(M,P,b):
-  x0=np.array([0.]*len(P)).T
+  N=len(P)
+  x0=np.array([0.]*N).T
   ro_0=np.dot(P,b)-np.dot(np.dot(P,M),np.dot(P,x0))
   g0=np.copy(ro_0)
 
@@ -151,7 +152,7 @@ def Grad(M,P,b):
 
   ro,g,x,k=ro_0,g0,x0,0
   
-  while norm(ro,2)!=0:
+  while norm(ro,2)!=0 and k<N:
     alpha=np.dot(ro,ro)/np.dot(np.dot(PMP,g),g)
     x+=alpha*g
     ro_old=np.copy(ro)
