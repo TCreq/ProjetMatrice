@@ -13,20 +13,7 @@ import matplotlib.pyplot as plt
 
 ### --------------------------------------------
 
-# def V(r,r0=1):
-#     return 1/(1+(r/r0)**2)
-
-
-def MatriceA(n,tau=1):
-    A=np.eye(n)
-    for i in range(1,n):
-        A+=np.diag((n-i)*[1/(1+(i*tau)**2)],i)+np.diag((n-i)*[1/(1+(i*tau)**2)],-i)
-    return A
-
-print(MatriceA(4,1))
-
-
-def remontee(T0,b0):
+def remontee(T0,b0): #Fonction du TP
     """
     donne la solution du système triangulaire avec T0 matrice triangulaire supérieure
     et b0 vecteur colonne, fonctionne par remontée
@@ -42,7 +29,7 @@ def remontee(T0,b0):
         b[i]=b[i]/T[i,i]
     return b
 
-def descente(T0,b0):
+def descente(T0,b0): #Fonction du TP
     """
     donne la solution du système triangulaire avec T0 matrice triangulaire inférieure
     et b0 vecteur colonne, fonctionne par descente
@@ -58,8 +45,7 @@ def descente(T0,b0):
         b[i]=b[i]/T[i,i]
     return b
 
-
-def LU2(A0):
+def LU2(A0): #Fonction du TP
     A=copy.deepcopy(A0) #crée un deepcopy de la matrice argument
     A=A.astype(float) #convertit les éléments en float pour éviter les arrondis
     n=np.shape(A)[0] #enregistre la taille de la matrice
@@ -72,6 +58,17 @@ def LU2(A0):
             L[k,j]=(1/U[j,j])*(A[k,j]-sum(L[k,:j]*U[:j,j].transpose()))
     return [L,U]
 
+### Fonction MatriceA  ------------------------
+
+def MatriceA(n,tau=1):
+    A=np.eye(n)
+    for i in range(1,n):
+        A+=np.diag((n-i)*[1/(1+(i*tau)**2)],i)+np.diag((n-i)*[1/(1+(i*tau)**2)],-i)
+    return A
+
+#print(MatriceA(4,1))
+
+### Resolution probleme par LU ----------------
 
 n=20
 A=MatriceA(n,1)
@@ -85,46 +82,71 @@ print(x)
 print(np.dot(A,x))
 plt.scatter(list(range(1,n+1)),x)
 
+### Vecteur t ----------------------------------
 
 def t(n,tau=1):
-    return [1/(1+(i*tau)**2) for i in range(n)]
+    return np.array([1/(1+(i*tau)**2) for i in range(n)])
 t1=t(20,1)
+#print(t1)
+
+### Etape 1 ------------------------------------
 
 def Etape1(t):
-    f=len(t)*[None]
-    fi=1/t[0]
-    f[0]=fi
-    for i in range(2,len(t)+1):
-        alpha=1
-        beta=1
-        fi=alpha*np.hstack(np.flip(fi,0),np.array([0]))+beta*np.hstack(np.array([0]),fi)
-    return f
+    listf=len(t)*[None]
+    fk=np.array([1/t[0]])
+    listf[0]=fk
+    for k in range(2,len(t)+1):
+        delta=sum(t[1:k]*fk)
+        beta=1/(1-delta**2)
+        alpha=-delta*beta
+        fk1=alpha*np.hstack((np.flip(fk,0),np.array([0])))+beta*np.hstack((np.array([0]),fk))
+        fk=fk1
+        listf[k-1]=fk
+    return listf
 
+#l=Etape1(t1)
+#print(l)
+#print([len(u) for u in l])
+#print([MatriceA(k+1).dot(l[k]).astype(int) for k in range(n)])
 
+n=20
+b=np.array(n*[1.])
+print(b)
+print(b[0:1])
 
+### Etape 2 -----------------------------------
 
+def Etape2(t,b):
+    listf=Etape1(t)
+    x=listf[0]*b[0]
+    for k in range(1,n):
+      theta=b[k]-sum(np.flip(t[1:k+1],0)*x)
+      x=np.hstack((x,np.array([0])))+theta*listf[k]
+    return x
 
+x=Etape2(t1,b)
+#print(x)
+print(np.dot(A,x))
+plt.scatter(list(range(1,n+1)),x)
 
+### Etape 1 et Etape 2 vesion améliorée qui minimise le stockage
 
+def Etape12(t,b):
+    fk=np.array([1/t[0]])
+    x=fk*b[0]
+    for k in range(1,len(t)):
+        delta=sum(t[1:k+1]*fk)
+        beta=1/(1-delta**2)
+        alpha=-delta*beta
+        fk=alpha*np.hstack((np.flip(fk,0),np.array([0])))+beta*np.hstack((np.array([0]),fk))
+        theta=b[k]-sum(np.flip(t[1:k+1],0)*x)
+        x=np.hstack((x,np.array([0])))+theta*fk
+    return x
+        
+x=Etape12(t1,b)
+#print(x)
+print(np.dot(A,x))
+plt.scatter(list(range(1,n+1)),x)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# on obtient les memes résultats que la méthode LU mais Nop inférieur
 
