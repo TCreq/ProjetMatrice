@@ -59,6 +59,9 @@ def LU(A0):
 
 panne=[7,8,15,16,17,18]
 n=20
+
+# Création de la matrice P:
+
 P=np.eye(n)
 for i in panne:
   P[i-1][i-1]=0
@@ -66,6 +69,8 @@ for i in panne:
 A=MatriceA(n,1)
 pi=np.array(n*[1.]).transpose()
 
+# A_new = PAP
+# pi_new = P.pi
 A_new=np.dot(P,A)
 
 for i in panne:
@@ -74,16 +79,17 @@ for i in panne:
 
 pi_new=np.dot(P,pi)
 
+# On résout le problème (8)
+
 LU=LU2(A_new)
 L=LU[0]
 U=LU[1]
 y=descente(L,pi_new)
 x=remontee(U,y)
 print(x)
-print(np.dot(A_new,x))
 plt.bar(range(1,n+1),x,width = 0.6,label="x : la puissance émise par l'antenne")
-yverif=np.dot(A,x)
-plt.bar(range(1,n+1),yverif,width = 0.1,color='red',label=f"$\pi = Ax :$ la puissance reçue au pied de l'antenne")
+pi_reel=np.dot(A,x)
+plt.bar(range(1,n+1),pi_reel,width = 0.1,color='red',label=f"$\pi = Ax :$ la puissance reçue au pied de l'antenne")
 plt.scatter(range(1,n+1),pi_new,color='green',label=f"$P\pi = PAPx :$ la puissance qu'on veut recevoir au pied de l'antenne")
 plt.xlabel('Les antennes')
 plt.xticks(range(21))
@@ -93,12 +99,18 @@ plt.legend(bbox_to_anchor=(0., 1.02, 1., .102),loc='lower left', mode="expand", 
 
 panne=[7,8,15,16,17,18]
 n=20
+
+# Création de la matrice P:
+
 P=np.eye(n)
 for i in panne:
   P[i-1][i-1]=0
 
 A=MatriceA(n,1)
 pi=np.array(n*[1.]).transpose()
+
+# G = P.transpose(A).A.P
+# pi_new = P.transpose(A).pi
 
 A_new=np.dot(A,P)
 G=np.dot(A_new.T,A_new)
@@ -109,6 +121,8 @@ for i in panne:
 
 pi_new=np.dot(P,np.dot(A_new.T,pi))
 
+# On résout le problème (10)
+
 LU=LU2(G)
 L=LU[0]
 U=LU[1]
@@ -116,14 +130,14 @@ y=descente(L,pi_new)
 x=remontee(U,y)
 print(x)
 plt.bar(range(1,n+1),x,width = 0.6,label="x : la puissance émise par l'antenne")
-yverif=np.dot(A,x)
-plt.bar(range(1,n+1),yverif,width = 0.1,color='red',label=f"$\pi = Ax :$ la puissance reçue au pied de l'antenne")
+pi_reel=np.dot(A,x)
+plt.bar(range(1,n+1),pi_reel,width = 0.1,color='red',label=f"$\pi = Ax :$ la puissance reçue au pied de l'antenne")
 plt.xlabel('Les antennes')
 plt.xticks(range(1,n+1))
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102),loc='lower left', mode="expand", borderaxespad=0.)
-print(np.mean(yverif))
 
-##########################################  Question 7_1  ##########################################
+
+###########################################  Question 7  ###########################################
 
 import scipy.linalg as lg
 from numpy.linalg import norm
@@ -149,6 +163,9 @@ def Grad(M,P,b):
     k+=1
   return x
 
+##########################################  Question 7_1  ##########################################
+##########################################  Cas où M=PAP  ##########################################
+
 A=MatriceA(n,1)
 M=A
 
@@ -171,6 +188,7 @@ plt.xticks(range(21))
 plt.legend(bbox_to_anchor=(0., 1.02, 1., .102),loc='lower left', mode="expand", borderaxespad=0.)
 
 ##########################################  Question 7_2  ##########################################
+#####################################  Cas où M=transpose(A).A  ####################################
 
 panne=[7,8,15,16,17,18]
 n=20
