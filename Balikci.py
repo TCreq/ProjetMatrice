@@ -1,6 +1,5 @@
 import numpy as np
 import copy
-import timeit
 import matplotlib.pyplot as plt
 
 ##########################################  Question 3  ##########################################
