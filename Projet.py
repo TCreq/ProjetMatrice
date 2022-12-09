@@ -78,9 +78,11 @@ L=LU[0]
 U=LU[1]
 y=descente(L,pi)
 x=remontee(U,y)
-print(x)
+#print(x)
 print(np.dot(A,x))
 plt.scatter(list(range(1,n+1)),x)
+plt.plot(list(range(1,n+1)),np.dot(A,x),color="red")
+plt.legend(["Puissance émise","Puissance reçue"],loc="right")
 
 ### Vecteur t ----------------------------------
 
@@ -92,9 +94,13 @@ t1=t(20,1)
 ### Etape 1 ------------------------------------
 
 def Etape1(t):
-    listf=len(t)*[None]
-    fk=np.array([1/t[0]])
-    listf[0]=fk
+    """
+    Version améliorée à la fin, avec explications plus détaillées
+    Etape 1 de l'algorithme défini dans le sujet
+    """
+    listf=len(t)*[None] #définition de la liste contenant les f (allocation espace stockage)
+    fk=np.array([1/t[0]]) # f0
+    listf[0]=fk # changement des fk
     for k in range(2,len(t)+1):
         delta=sum(t[1:k]*fk)
         beta=1/(1-delta**2)
@@ -104,49 +110,60 @@ def Etape1(t):
         listf[k-1]=fk
     return listf
 
+### Bloc de test de l'étape 1
 #l=Etape1(t1)
 #print(l)
 #print([len(u) for u in l])
 #print([MatriceA(k+1).dot(l[k]).astype(int) for k in range(n)])
 
-n=20
-b=np.array(n*[1.])
-print(b)
-print(b[0:1])
-
 ### Etape 2 -----------------------------------
 
 def Etape2(t,b):
-    listf=Etape1(t)
-    x=listf[0]*b[0]
+    """
+    Etape 2 de l'algorithme défini dans le sujet
+    """
+    listf=Etape1(t) # récupération de la liste des f de l'étape 1
+    x=listf[0]*b[0] # definition du premier x
     for k in range(1,n):
       theta=b[k]-sum(np.flip(t[1:k+1],0)*x)
       x=np.hstack((x,np.array([0])))+theta*listf[k]
     return x
 
+n=20
+b=np.array(n*[1.])
+#print(b)
+#print(b[0:1])
 x=Etape2(t1,b)
 #print(x)
 print(np.dot(A,x))
 plt.scatter(list(range(1,n+1)),x)
+plt.plot(list(range(1,n+1)),np.dot(A,x),color="red")
+plt.legend(["Puissance émise","Puissance reçue"],loc="right")
 
 ### Etape 1 et Etape 2 vesion améliorée qui minimise le stockage
 
 def Etape12(t,b):
-    fk=np.array([1/t[0]])
-    x=fk*b[0]
-    for k in range(1,len(t)):
-        delta=sum(t[1:k+1]*fk)
-        beta=1/(1-delta**2)
-        alpha=-delta*beta
-        fk=alpha*np.hstack((np.flip(fk,0),np.array([0])))+beta*np.hstack((np.array([0]),fk))
-        theta=b[k]-sum(np.flip(t[1:k+1],0)*x)
-        x=np.hstack((x,np.array([0])))+theta*fk
+    """
+    les vecteurs utilisés (t,fk,xk) sont en ligne dans le programme,
+    mais c'est tout à fait identique à la méthode utilisant des vecteurs colonnes
+    """
+    fk=np.array([1/t[0]]) #premier fk
+    x=fk*b[0] #premier xk
+    for k in range(1,len(t)): #on varie entre k=2 et n (sur Python, on utilise les indices de 1 à n-1)
+        delta=sum(t[1:k+1]*fk) #definition du delta k
+        beta=1/(1-delta**2) #definition du beta k
+        alpha=-delta*beta #definition du alpha k
+        fk=alpha*np.hstack((np.flip(fk,0),np.array([0])))+beta*np.hstack((np.array([0]),fk)) # calcul du fk
+        theta=b[k]-sum(np.flip(t[1:k+1],0)*x) # calcul du theta k
+        x=np.hstack((x,np.array([0])))+theta*fk # calcul du xk
     return x
         
 x=Etape12(t1,b)
 #print(x)
 print(np.dot(A,x))
 plt.scatter(list(range(1,n+1)),x)
+plt.plot(list(range(1,n+1)),np.dot(A,x),color="red")
+plt.legend(["Puissance émise","Puissance reçue"],loc="best")
 
 # on obtient les memes résultats que la méthode LU mais Nop inférieur
 
